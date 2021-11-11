@@ -1,0 +1,75 @@
+{
+    "type": "AdaptiveCard",
+    "body": [
+        {
+            "type": "TextBlock",
+            "size": "Medium",
+            "weight": "Bolder",
+            "text": "New External User Assignment Request Granted"
+        },
+        {
+            "type": "ColumnSet",
+            "columns": [
+                {
+                    "type": "Column",
+                    "items": [
+                        {
+                            "type": "Image",
+                            "style": "Person",
+                            "url": "https://raw.githubusercontent.com/JanVidarElven/ExternalIdentitiesGovernance/main/IdentityGovernance.png",
+                            "size": "Small"
+                        }
+                    ],
+                    "width": "auto"
+                },
+                {
+                    "type": "Column",
+                    "items": [
+                        {
+                            "type": "TextBlock",
+                            "weight": "Bolder",
+                            "text": "@{triggerBody()?['TargetDisplayName']}",
+                            "wrap": true
+                        },
+                        {
+                            "type": "TextBlock",
+                            "spacing": "None",
+                            "text": "@{triggerBody()?['TargetEmail']}",
+                            "isSubtle": true,
+                            "wrap": true
+                        }
+                    ],
+                    "width": "stretch"
+                }
+            ]
+        },
+        {
+            "type": "TextBlock",
+            "text": "A new external identity has been granted access and are now added as a Guest User Member to this Team. See details below.",
+            "wrap": true
+        },
+        {
+            "type": "FactSet",
+            "facts": [
+                {
+                    "title": "Request Created:",
+                    "value": "@{triggerBody()?['RequestCreatedDateTime']}"
+                },                
+                {
+                    "title": "Access Package Name:",
+                    "value": "@{triggerBody()?['AccessPackageName']}"
+                },
+                {
+                    "title": "Catalog Name:",
+                    "value": "@{triggerBody()?['CatalogName']}"
+                },
+                {
+                    "title": "Policy Name:",
+                    "value": "@{triggerBody()?['AccessPackagePolicyName']}"
+                }                                
+            ]
+        }
+    ],
+    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+    "version": "1.0"
+}

@@ -1,0 +1,13 @@
+{
+    "markdownlint.config": {
+        "MD028": false,
+        "MD025": {
+            "front_matter_title": ""
+        }
+    },
+    "azureLogicAppsStandard.deploySubpath": ".",
+    "azureLogicAppsStandard.projectLanguage": "JavaScript",
+    "azureLogicAppsStandard.projectRuntime": "~3",
+    "debug.internalConsoleOptions": "neverOpen",
+    "azureFunctions.suppressProject": true
+}

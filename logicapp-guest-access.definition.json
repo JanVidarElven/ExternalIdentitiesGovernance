@@ -1,0 +1,214 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "workflows_logicapp_guest_access_name": {
+            "defaultValue": "logicapp-guest-access",
+            "type": "string"
+        },
+        "workflows_logicapp-guest-access_parameters_$connections": {
+            "defaultValue": {
+                "sharepointonline": {
+                    "connectionId": "/subscriptions/b1193530-4663-4bc7-90de-1d0d44576ba7/resourceGroups/rg-external-identities/providers/Microsoft.Web/connections/sharepointonline",
+                    "connectionName": "sharepointonline",
+                    "id": "/subscriptions/b1193530-4663-4bc7-90de-1d0d44576ba7/providers/Microsoft.Web/locations/norwayeast/managedApis/sharepointonline"
+                },
+                "teams": {
+                    "connectionId": "/subscriptions/b1193530-4663-4bc7-90de-1d0d44576ba7/resourceGroups/rg-external-identities/providers/Microsoft.Web/connections/teams-1",
+                    "connectionName": "teams-1",
+                    "id": "/subscriptions/b1193530-4663-4bc7-90de-1d0d44576ba7/providers/Microsoft.Web/locations/norwayeast/managedApis/teams"
+                }
+            },
+            "type": "Object"
+        }
+    },
+    "resources": [
+        {
+            "apiVersion": "2017-07-01",
+            "dependsOn": [],
+            "location": "norwayeast",
+            "name": "[parameters('workflows_logicapp_guest_access_name')]",
+            "properties": {
+                "definition": {
+                    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "$connections": {
+                            "defaultValue": {
+                                "sharepointonline": {
+                                    "connectionId": "/subscriptions/b1193530-4663-4bc7-90de-1d0d44576ba7/resourceGroups/rg-external-identities/providers/Microsoft.Web/connections/sharepointonline",
+                                    "connectionName": "sharepointonline",
+                                    "id": "/subscriptions/b1193530-4663-4bc7-90de-1d0d44576ba7/providers/Microsoft.Web/locations/norwayeast/managedApis/sharepointonline"
+                                },
+                                "teams": {
+                                    "connectionId": "/subscriptions/b1193530-4663-4bc7-90de-1d0d44576ba7/resourceGroups/rg-external-identities/providers/Microsoft.Web/connections/teams-1",
+                                    "connectionName": "teams-1",
+                                    "id": "/subscriptions/b1193530-4663-4bc7-90de-1d0d44576ba7/providers/Microsoft.Web/locations/norwayeast/managedApis/teams"
+                                }
+                            },
+                            "type": "Object"
+                        }
+                    },
+                    "triggers": {
+                        "manual": {
+                            "type": "Request",
+                            "kind": "Http",
+                            "inputs": {
+                                "schema": {
+                                    "properties": {
+                                        "AccessPackageAssignmentId": {
+                                            "type": "string"
+                                        },
+                                        "AccessPackageAssignmentRequestId": {
+                                            "type": "string"
+                                        },
+                                        "AccessPackageId": {
+                                            "type": "string"
+                                        },
+                                        "AccessPackageName": {
+                                            "type": "string"
+                                        },
+                                        "AccessPackagePolicyId": {
+                                            "type": "string"
+                                        },
+                                        "AccessPackagePolicyName": {
+                                            "type": "string"
+                                        },
+                                        "CatalogId": {
+                                            "type": "string"
+                                        },
+                                        "CatalogName": {
+                                            "type": "string"
+                                        },
+                                        "ConnectedOrganizationName": {
+                                            "type": "string"
+                                        },
+                                        "Event": {
+                                            "type": "string"
+                                        },
+                                        "RequestCreatedDateTime": {
+                                            "type": "string"
+                                        },
+                                        "TargetDisplayName": {
+                                            "type": "string"
+                                        },
+                                        "TargetEmail": {
+                                            "type": "string"
+                                        },
+                                        "TargetId": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            },
+                            "operationOptions": "IncludeAuthorizationHeadersInOutputs"
+                        }
+                    },
+                    "actions": {
+                        "Check_existing_email": {
+                            "runAfter": {},
+                            "type": "ApiConnection",
+                            "inputs": {
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['sharepointonline']['connectionId']"
+                                    }
+                                },
+                                "method": "get",
+                                "path": "/datasets/@{encodeURIComponent(encodeURIComponent('https://elven.sharepoint.com/sites/ElvenExternalIdentitesManagement'))}/tables/@{encodeURIComponent(encodeURIComponent('4c2a0630-8270-4e18-9ef0-e10d3f62e967'))}/items",
+                                "queries": {
+                                    "$filter": "Epost eq '@{triggerBody()?['TargetEmail']}'"
+                                }
+                            }
+                        },
+                        "Condition_Catalog": {
+                            "actions": {
+                                "Condition_Event": {
+                                    "actions": {
+                                        "Post_adaptive_card_in_a_chat_or_channel": {
+                                            "runAfter": {},
+                                            "type": "ApiConnection",
+                                            "inputs": {
+                                                "body": {
+                                                    "messageBody": "{\n    \"type\": \"AdaptiveCard\",\n    \"body\": [\n        {\n            \"type\": \"TextBlock\",\n            \"size\": \"Medium\",\n            \"weight\": \"Bolder\",\n            \"text\": \"New External User Assignment Request Granted\"\n        },\n        {\n            \"type\": \"ColumnSet\",\n            \"columns\": [\n                {\n                    \"type\": \"Column\",\n                    \"items\": [\n                        {\n                            \"type\": \"Image\",\n                            \"style\": \"Person\",\n                            \"url\": \"https://raw.githubusercontent.com/JanVidarElven/ExternalIdentitiesGovernance/main/IdentityGovernance.png\",\n                            \"size\": \"Small\"\n                        }\n                    ],\n                    \"width\": \"auto\"\n                },\n                {\n                    \"type\": \"Column\",\n                    \"items\": [\n                        {\n                            \"type\": \"TextBlock\",\n                            \"weight\": \"Bolder\",\n                            \"text\": \"@{triggerBody()?['TargetDisplayName']}\",\n                            \"wrap\": true\n                        },\n                        {\n                            \"type\": \"TextBlock\",\n                            \"spacing\": \"None\",\n                            \"text\": \"@{triggerBody()?['TargetEmail']}\",\n                            \"isSubtle\": true,\n                            \"wrap\": true\n                        }\n                    ],\n                    \"width\": \"stretch\"\n                }\n            ]\n        },\n        {\n            \"type\": \"TextBlock\",\n            \"text\": \"A new external identity has been granted access and are now added as a Guest User Member to this Team. See details below.\",\n            \"wrap\": true\n        },\n        {\n            \"type\": \"FactSet\",\n            \"facts\": [\n                {\n                    \"title\": \"Request Created:\",\n                    \"value\": \"@{triggerBody()?['RequestCreatedDateTime']}\"\n                },                \n                {\n                    \"title\": \"Access Package Name:\",\n                    \"value\": \"@{triggerBody()?['AccessPackageName']}\"\n                },\n                {\n                    \"title\": \"Catalog Name:\",\n                    \"value\": \"@{triggerBody()?['CatalogName']}\"\n                },\n                {\n                    \"title\": \"Policy Name:\",\n                    \"value\": \"@{triggerBody()?['AccessPackagePolicyName']}\"\n                }                                \n            ]\n        }\n    ],\n    \"$schema\": \"http://adaptivecards.io/schemas/adaptive-card.json\",\n    \"version\": \"1.3\"\n}",
+                                                    "recipient": {
+                                                        "channelId": "19:939719169b8745f9bc19eae091cd0c57@thread.tacv2",
+                                                        "groupId": "c193bc6a-253f-4ace-bc63-a519c3b92aaa"
+                                                    }
+                                                },
+                                                "host": {
+                                                    "connection": {
+                                                        "name": "@parameters('$connections')['teams']['connectionId']"
+                                                    }
+                                                },
+                                                "method": "post",
+                                                "path": "/v1.0/teams/conversation/adaptivecard/poster/Flow bot/location/@{encodeURIComponent('Channel')}"
+                                            }
+                                        }
+                                    },
+                                    "runAfter": {},
+                                    "expression": {
+                                        "and": [
+                                            {
+                                                "equals": [
+                                                    "@triggerBody()?['Event']",
+                                                    "AssignmentRequestGranted"
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    "type": "If"
+                                }
+                            },
+                            "runAfter": {
+                                "Get_external_identity": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "expression": {
+                                "and": [
+                                    {
+                                        "equals": [
+                                            "@{triggerBody()?['CatalogId']}",
+                                            "b4cba172-fb1e-48cf-a606-5c9f25a443fb"
+                                        ]
+                                    }
+                                ]
+                            },
+                            "type": "If"
+                        },
+                        "Get_external_identity": {
+                            "runAfter": {
+                                "Check_existing_email": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "ApiConnection",
+                            "inputs": {
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['sharepointonline']['connectionId']"
+                                    }
+                                },
+                                "method": "get",
+                                "path": "/datasets/@{encodeURIComponent(encodeURIComponent('https://elven.sharepoint.com/sites/ElvenExternalIdentitesManagement'))}/tables/@{encodeURIComponent(encodeURIComponent('4c2a0630-8270-4e18-9ef0-e10d3f62e967'))}/items/@{encodeURIComponent(first(body('Check_existing_email')?['Value'])?['ID'])}"
+                            }
+                        }
+                    },
+                    "outputs": {}
+                },
+                "parameters": {
+                    "$connections": {
+                        "value": "[parameters('workflows_logicapp-guest-access_parameters_$connections')]"
+                    }
+                },
+                "state": "Enabled"
+            },
+            "scale": null,
+            "tags": {},
+            "type": "Microsoft.Logic/workflows"
+        }
+    ],
+    "variables": {}
+}

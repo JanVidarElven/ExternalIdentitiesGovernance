@@ -1,0 +1,23 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "workflows_logicapp_guest_access_name": {
+            "value": "logicapp-guest-access"
+        },
+        "workflows_logicapp-guest-access_parameters_$connections": {
+            "value": {
+                "sharepointonline": {
+                    "connectionId": "/subscriptions/b1193530-4663-4bc7-90de-1d0d44576ba7/resourceGroups/rg-external-identities/providers/Microsoft.Web/connections/sharepointonline",
+                    "connectionName": "sharepointonline",
+                    "id": "/subscriptions/b1193530-4663-4bc7-90de-1d0d44576ba7/providers/Microsoft.Web/locations/norwayeast/managedApis/sharepointonline"
+                },
+                "teams": {
+                    "connectionId": "/subscriptions/b1193530-4663-4bc7-90de-1d0d44576ba7/resourceGroups/rg-external-identities/providers/Microsoft.Web/connections/teams-1",
+                    "connectionName": "teams-1",
+                    "id": "/subscriptions/b1193530-4663-4bc7-90de-1d0d44576ba7/providers/Microsoft.Web/locations/norwayeast/managedApis/teams"
+                }
+            }
+        }
+    }
+}
